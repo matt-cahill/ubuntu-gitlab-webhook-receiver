@@ -25,6 +25,4 @@ RUN apt-get update && \
 
 EXPOSE 8000
 
-CMD /etc/init.d/gitlab-webhook-receiver stop && \
-    /etc/init.d/gitlab-webhook-receiver start && \
-    tail -f /var/log/foreman/production.log
+CMD tail -f /var/log/foreman/production.log
