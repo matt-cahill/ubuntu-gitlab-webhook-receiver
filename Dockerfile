@@ -17,6 +17,8 @@ RUN apt-get update && \
     git clone https://github.com/matt-cahill/gitlab-webhook-receiver.git /var/lib/puppet/gitlab-webhook-receiver && \
     ln -s /var/lib/puppet/gitlab-webhook-receiver/gitlab-webhook-receiver /etc/init.d/gitlab-webhook-receiver && \
     update-rc.d gitlab-webhook-receiver defaults && \
+    touch /var/lib/puppet/gitlab-webhook-receiver/webhook.log && \
+    chmod 666 /var/lib/puppet/gitlab-webhook-receiver/webhook.log && \
     echo "set modeline" > /root/.vimrc && \
     echo "export TERM=vt100" >> /root/.bashrc && \
     LANG=en_US.UTF-8 locale-gen --purge en_US.UTF-8 && \
@@ -25,4 +27,4 @@ RUN apt-get update && \
 
 EXPOSE 8000
 
-CMD tail -f /var/log/foreman/production.log
+CMD tail -f /var/lib/puppet/gitlab-webhook-receiver/webhook.log
