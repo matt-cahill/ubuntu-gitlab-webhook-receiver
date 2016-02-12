@@ -12,7 +12,8 @@ RUN apt-get update && \
     vim-puppet \
     git \
     traceroute \
-    dnsutils && \
+    dnsutils \
+    python-pip && \
     mkdir -p /var/lib/puppet/gitlab-webhook-receiver && \
     git clone https://github.com/matt-cahill/gitlab-webhook-receiver.git /var/lib/puppet/gitlab-webhook-receiver && \
     ln -s /var/lib/puppet/gitlab-webhook-receiver/gitlab-webhook-receiver /etc/init.d/gitlab-webhook-receiver && \
