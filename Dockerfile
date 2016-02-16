@@ -6,7 +6,6 @@ MAINTAINER Matt Cahill
 ENV DEBIAN_FRONTEND noninteractive
 
 RUN apt-get update && \
-    apt-get dist-upgrade -y && \
     apt-get install -y \
     vim \
     vim-puppet \
@@ -14,12 +13,6 @@ RUN apt-get update && \
     traceroute \
     dnsutils \
     python-pip && \
-    mkdir -p /var/lib/puppet/gitlab-webhook-receiver && \
-    git clone https://github.com/matt-cahill/gitlab-webhook-receiver.git /var/lib/puppet/gitlab-webhook-receiver && \
-    ln -s /var/lib/puppet/gitlab-webhook-receiver/gitlab-webhook-receiver /etc/init.d/gitlab-webhook-receiver && \
-    update-rc.d gitlab-webhook-receiver defaults && \
-    touch /var/lib/puppet/gitlab-webhook-receiver/webhook.log && \
-    chmod 666 /var/lib/puppet/gitlab-webhook-receiver/webhook.log && \
     echo "set modeline" > /root/.vimrc && \
     echo "export TERM=vt100" >> /root/.bashrc && \
     LANG=en_US.UTF-8 locale-gen --purge en_US.UTF-8 && \
@@ -28,4 +21,15 @@ RUN apt-get update && \
 
 EXPOSE 8000
 
-CMD tail -f /var/lib/puppet/gitlab-webhook-receiver/webhook.log
+CMD ( test ! -f /var/lib/puppet/gitlab-webhook-receiver/.delete_me_to_pull_on_next_start && \
+        ( echo "FIRST-RUN: Please wait while gitlab-webhook-receiver is pulled from github..."; \
+        mkdir -p /var/lib/puppet/gitlab-webhook-receiver && \
+        git clone https://github.com/matt-cahill/gitlab-webhook-receiver.git /var/lib/puppet/gitlab-webhook-receiver && \
+        ln -s /var/lib/puppet/gitlab-webhook-receiver/gitlab-webhook-receiver /etc/init.d/gitlab-webhook-receiver && \
+        update-rc.d gitlab-webhook-receiver defaults && \
+        touch /var/lib/puppet/gitlab-webhook-receiver/webhook.log && \
+        chmod 666 /var/lib/puppet/gitlab-webhook-receiver/webhook.log && \
+        touch /var/lib/puppet/gitlab-webhook-receiver/.delete_me_to_pull_on_next_start \
+        ) \
+    ); \
+    tail -f /var/lib/puppet/gitlab-webhook-receiver/webhook.log
