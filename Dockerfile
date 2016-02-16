@@ -22,14 +22,15 @@ RUN apt-get update && \
 EXPOSE 8000
 
 CMD ( test ! -f /var/lib/puppet/gitlab-webhook-receiver/.delete_me_to_pull_on_next_start && \
-        ( echo "FIRST-RUN: Please wait while gitlab-webhook-receiver is pulled from github..."; \
-        mkdir -p /var/lib/puppet/gitlab-webhook-receiver && \
-        git clone https://github.com/matt-cahill/gitlab-webhook-receiver.git /var/lib/puppet/gitlab-webhook-receiver && \
-        ln -s /var/lib/puppet/gitlab-webhook-receiver/gitlab-webhook-receiver /etc/init.d/gitlab-webhook-receiver && \
-        update-rc.d gitlab-webhook-receiver defaults && \
-        touch /var/lib/puppet/gitlab-webhook-receiver/webhook.log && \
-        chmod 666 /var/lib/puppet/gitlab-webhook-receiver/webhook.log && \
-        touch /var/lib/puppet/gitlab-webhook-receiver/.delete_me_to_pull_on_next_start \
+        ( echo "Please wait while gitlab-webhook-receiver is pulled from github..."; \
+            mkdir -p /var/lib/puppet/gitlab-webhook-receiver; \
+            touch /var/lib/puppet/gitlab-webhook-receiver/webhook.log && \
+            chmod 666 /var/lib/puppet/gitlab-webhook-receiver/webhook.log; \
+            git clone https://github.com/matt-cahill/gitlab-webhook-receiver.git /var/lib/puppet/gitlab-webhook-receiver && \
+            ln -s /var/lib/puppet/gitlab-webhook-receiver/gitlab-webhook-receiver /etc/init.d/gitlab-webhook-receiver && \
+            update-rc.d gitlab-webhook-receiver defaults; \
+            touch /var/lib/puppet/gitlab-webhook-receiver/.delete_me_to_pull_on_next_start \
         ) \
     ); \
+    /etc/init.d/gitlab-webhook-receiver start; \
     tail -f /var/lib/puppet/gitlab-webhook-receiver/webhook.log
